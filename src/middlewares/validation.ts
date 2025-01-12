@@ -11,7 +11,7 @@ export const userValidation = (req: Request, res: Response, next: NextFunction) 
         
         if(!UserValidate.success){
             const {_errors, ...formatedError} = UserValidate.error.format()
-            res.status(401).json({error: formatedError})
+            res.status(400).json({error: formatedError})
         }else{
             next()
         }
