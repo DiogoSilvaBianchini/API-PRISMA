@@ -1,8 +1,6 @@
 import {Request, Response} from 'express'
 import { genSalt, hash } from "bcryptjs"
-import {PrismaClient} from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '../../prisma/prismaClient'
 
 const encryptPassword = async (password: string) => {
     const salt = await genSalt(10)
