@@ -16,7 +16,7 @@ export const createToken = async (req:Request, res:Response, next:NextFunction) 
             const token = jwt.sign(payload, String(JWT_SECRET))
             res.status(200).json({msg:"Token criado com sucesso.", results: token, status: 200})
         }else{
-            res.status(401).json({msg: "Usuario não cadastrado", status: 401})
+            res.status(400).json({msg: "E-mail ou senha incorretos", status: 400})
         }
     } catch (error) {
         next(error)
