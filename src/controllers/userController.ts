@@ -62,3 +62,12 @@ export const updateUser = async (decodeToken:token, req: Request, res: Response,
     }
 }
 
+export const deleteUser = async (decodeToken:token, req: Request, res: Response, next: NextFunction) => {
+    try {
+        const {id} = decodeToken
+        await prisma.user.delete({where: {id: String(id)}})
+        res.status(200).json({msg: "Usuario removido com sucesso!", results: true, status: 200})
+    } catch (error) {
+        next(error)
+    }
+}
