@@ -1,48 +1,65 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
+import { PrismaClient } from "@prisma/client";
 
-interface Task {
-    id: number,
-    description: string
-}
+const prisma = new PrismaClient()
 
-let task: Task[] = [];
-
-export const listTask = (req: Request, res: Response): void => {
-    res.json(task)
-}
-
-export const createTask = (req: Request, res: Response): void => {
-    const {description}: {description: string} = req.body
-    const newTask: Task = {id: task.length + 1, description: description} 
-    task.push(newTask)
-    res.status(200).json({msg: newTask, status: 200})
-}
-
-interface Params {
-    id: number
-}
-
-export const updateTask = (req: Request<Params>, res: Response): void => {
-    const { description } = req.body
-    let { id } = req.params
-    id = Number(id)
-
-    const filter = task.filter(task => task.id == id)
-
-    if(filter.length == 0){
-        res.status(200).json({results: [], msg: `Nenhum item foi encontrado com o id ${id}`, status: 200})
-    }else{
-        const newTask: Task = {id, description }
-        task = task.filter(data => data.id !== id)
-        task.push(newTask)
-        res.status(200).json({results: newTask, msg: `Item ID: ${id}, foi atualizado com sucesso`, status: 200})
+export const listTask = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const findAllTasks = await prisma.task.findMany()
+        res.status(200).json({msg: "Todas as tarefas cadastradas.", results: findAllTasks, status: 200})
+    } catch (error) {
+        next(error)
     }
 }
 
-export const deleteTask = (req: Request<Params>, res: Response): void => {
-    const {id} = req.params
+export const createTask = async (req: Request, res: Response, next:NextFunction) => {
+    try {
+        const { userId, describe } = req.body
+        
+        await prisma.task.create({
+            data: {
+                describe,
+                userId
+            }
+        })
 
-    task = task.filter((data) => data.id != id)
+        res.status(200).json({msg: "Tarefa criada com sucesso", status: 200})
+    } catch (error) {
+        next(error)
+    }
+}
 
-    res.status(200).json({results: true, msg: `Item ID: ${id}, foi removido com sucesso`, status: 200})
+
+export const updateTask = async (req: Request, res: Response, next:NextFunction) => {
+    try {
+        const {describe} = req.body
+        const {id} = req.params
+
+        const updateTask = await prisma.task.update({
+            where: {
+                id: String(id)
+            },
+            data: {
+                describe
+            }
+        })
+
+        res.status(200).json({msg: "Tarefa atualizada com sucesso", restuls: updateTask, status: 200})
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const deleteTask = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const {id} = req.params
+        await prisma.task.delete({
+            where: {
+                id: String(id)
+            }
+        })
+        res.status(200).json({msg: "Task deletada com sucesso!",restuls: true, status: 200})
+    } catch (error) {
+        next(error)
+    }
 }
