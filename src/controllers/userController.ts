@@ -19,19 +19,23 @@ export const findAllUsers = async (req: Request, res: Response) => {
     res.status(200).json({msg: "Usuario criado com suceeso!",restuls: allUsers, status: 200})
 }
 
-export const createUser = async (req: Request, res: Response) => {
-    const {name, email, password} = req.body
-    const hashPassword = await encryptPassword(password)
+export const createUser = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const {name, email, password} = req.body
+        const hashPassword = await encryptPassword(password)
 
-    await prisma.user.create({
-        data: {
-            name,
-            email,
-            password: hashPassword
-        }
-    })
+        await prisma.user.create({
+            data: {
+                name,
+                email,
+                password: hashPassword
+            }
+        })
 
-    res.status(200).json({msg: "Usuario criado com suceeso!", status: 200})
+        res.status(200).json({msg: "Usuario criado com suceeso!", status: 200})
+    } catch (error) {
+        next(error)
+    }
 }
 
 
