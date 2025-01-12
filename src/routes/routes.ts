@@ -13,4 +13,9 @@ export default (app:(any)) => {
     app.use((req: Request, res: Response, next: NextFunction) => {
         res.status(404).json({msg: "Página não encontrada", status: 200})
     })
+
+    app.use((error:Error, req:Request, res: Response, next: NextFunction) => {
+        console.log(error.message)
+        res.status(500).json({msg: "Algo deu errado, tente novamente mais tarde", results: false, status: 500})
+    })
 }

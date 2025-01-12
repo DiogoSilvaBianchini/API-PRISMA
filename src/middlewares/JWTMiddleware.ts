@@ -9,7 +9,7 @@ export const createToken = async (req:Request, res:Response, next:NextFunction) 
 
         const payload = await prisma.user.findUnique({
             where: {email},
-            select: {email: true}
+            select: {id: true, email: true}
         })
 
         if(payload){
@@ -32,9 +32,9 @@ export const authToken = async (req:Request, res:Response, next:NextFunction) =>
         if(token){
             token = token.split(" ")[1]
 
-            await jwt.verify(token, String(JWT_SECRET))
-            
-            next(token)
+            const decodeToken = await jwt.verify(token, String(JWT_SECRET))
+
+            next(decodeToken)
         }else{
             res.status(401).json({msg: "Token inválido", results: false, status: 401})
         }
