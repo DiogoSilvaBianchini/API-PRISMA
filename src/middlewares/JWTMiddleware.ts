@@ -19,7 +19,7 @@ export const createToken = async (req:Request, res:Response, next:NextFunction) 
             res.status(401).json({msg: "Usuario não cadastrado", status: 401})
         }
     } catch (error) {
-        next(error)   
+        next(error)
     }
 }
 
