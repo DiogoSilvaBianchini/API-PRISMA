@@ -11,7 +11,7 @@ export default (app:(any)) => {
     app.use("/user", express.json(), userRoutes)
 
     app.use((req: Request, res: Response, next: NextFunction) => {
-        res.status(404).json({msg: "Página não encontrada", status: 200})
+        res.status(404).json({msg: "Página não encontrada", status: 404})
     })
 
     app.use((error:Error, req:Request, res: Response, next: NextFunction) => {

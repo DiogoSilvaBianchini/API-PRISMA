@@ -43,3 +43,36 @@ export const authToken = async (req:Request, res:Response, next:NextFunction) =>
         next(error)
     }
 }
+
+const formatBearerToken = async(authorization:(String | undefined)) => {
+    try {
+        const { JWT_SECRET } = process.env
+
+        if(!authorization){
+            return false
+        }
+
+        const token = authorization.split(" ")[1]
+        const validateToken = await jwt.verify(token, String(JWT_SECRET))
+        return validateToken
+    } catch (error) {
+        return false
+    }
+}
+
+export const validateToken = async (req:Request, res:Response, next:NextFunction) => {
+    try {
+        const authorization:(string | undefined) = req.headers.authorization
+        const validate = await formatBearerToken(authorization)
+
+        if(validate){
+            res.status(200).json({msg: "Token valido", results: true, status: 200})
+        }else{
+            res.status(401).json({msg: "Token inválido", results: false, status: 401})
+        }
+
+    } catch (error) {
+        console.log(error)
+        next(error)
+    }
+}

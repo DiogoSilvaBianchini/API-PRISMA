@@ -9,10 +9,18 @@ datasource db {
 
 model Task {
   id String @id @default(uuid())
-  describe String
+  title String
+  TaskItem TaskItem[]
   createdAt DateTime @default(now())
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
+}
+
+model TaskItem {
+  id String @id @default(uuid())
+  describe String
+  tasksId String 
+  task Task @relation(fields: [tasksId], references: [id], onDelete: Cascade)
 }
 
 model User {
